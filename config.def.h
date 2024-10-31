@@ -22,8 +22,8 @@ static const char *colors[][3] = {
 };
 
 /* tagging */
-static const char *tags[] = {"1",   "2",   "3",   "4",   "",
-                             "", "", "", "󰻞"};
+static const char *tags[] = {"", "", "", "", "󰨞",
+                             "", "", "", "󰻞"};
 
 static const Rule rules[] = {
     /* xprop(1):
@@ -32,9 +32,11 @@ static const Rule rules[] = {
      */
     /* class      instance    title       tags mask     isfloating   monitor */
     {"Gimp", NULL, NULL, 0, 1, -1},
-    {"chromium-browser-chromium", NULL, NULL, 1 << 5, 0, -1},
+
+    {"firefox", NULL, NULL, 1 << 6, 0, -1},
+    {"qutebrowser", NULL, NULL, 1 << 6, 0, -1},
+    {"Zathura", NULL, NULL, 1 << 7, 0, -1},
     {"armcord", NULL, NULL, 1 << 8, 0, -1},
-    {"PenTablet", NULL, NULL, 1 << 2, 1, -1},
     // { "zoom",  NULL,       NULL,       1 << 8,       0,           -1 },
     // { "Virt-manager",   "virt-manager",     "win11 on QEMU/KVM",     0, 0, -1
     // },
@@ -67,7 +69,7 @@ static const Layout layouts[] = {
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)                                                             \
   {                                                                            \
-    .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                       \
+    .v = (static const char *[]) { "/bin/sh", "-c", cmd, NULL }                \
   }
 
 /* commands */
@@ -76,18 +78,24 @@ static char dmenumon[2] =
 static const char *dmenucmd[] = {
     "dmenu_run", "-m",  dmenumon,  "-fn", dmenufont, "-nb", "#001438", "-nf",
     "#bbbbbb",   "-sb", "#0044bb", "-sf", "#eeeeee", NULL};
-static const char *termcmd[] = {"alacritty -e tmux", NULL};
-static const char *ffcmd[] = {"chromium-browser", NULL};
+static const char *termcmd[] = {"wezterm", NULL};
+static const char *ffcmd[] = {"firefox", NULL};
+static const char *qtbcmd[] = {"qutebrowser", NULL};
 static const char *sscmd[] = {"bin/smaim", NULL};
 static const char *pencmd[] = {"bin/xppen", NULL};
 static const char *vmcmd[] = {"virt-manaeger", NULL};
 static const char *disccmd[] = {"armcord", NULL};
 static const char *zoomcmd[] = {"zoom", NULL};
-
+static const char *codecmd[] = {"code", NULL};
 Autostarttag autostarttaglist[] = {
     //	{.cmd = pencmd,		.tags = 1 << 3},
-    {.cmd = termcmd, .tags = 1 << 4},
-    {.cmd = ffcmd, .tags = 1 << 5},
+    {.cmd = termcmd, .tags = 1 << 0},
+    {.cmd = termcmd, .tags = 1 << 1},
+    {.cmd = termcmd, .tags = 1 << 2},
+    {.cmd = termcmd, .tags = 1 << 3},
+    {.cmd = codecmd, .tags = 1 << 4},
+    {.cmd = ffcmd, .tags = 1 << 6},
+    {.cmd = qtbcmd, .tags = 1 << 6},
     //{.cmd = vmcmd,        .tags = 1 << 7 },
     {.cmd = disccmd, .tags = 1 << 8},
     //	{.cmd = zoomcmd,     .tags = 1 << 8 },
