@@ -1,50 +1,55 @@
-/* See LICENSE file for copyright and license details. */
+#define DWMHOME "/home/zephyr/suckless/dwm"
+#define SCRIPTHOME DWMHOME "/scripts/"
+#define SCRIPT(script) SCRIPTHOME #script
 
-/* appearance */
-static const unsigned int borderpx = 3; /* border pixel of windows */
-static const unsigned int gappx = 18;   /* gaps between windows */
+static const unsigned int borderpx = 4; /* border pixel of windows */
 static const unsigned int snap = 32;    /* snap pixel */
-static const int vertpad = 18;          /* vertical padding of bar */
-static const int sidepad = 18;          /* horizontal padding of bar */
 static const int showbar = 1;           /* 0 means no bar */
 static const int topbar = 1;            /* 0 means bottom bar */
-static const char *fonts[] = {"FiraCodeNerdFont-Regular:size=24"};
-static const char dmenufont[] = "FiraCodeNerdFont-Regular:size=24";
+static const int horizpadbar = 2;       /* horizontal padding for statusbar */
+static const int vertpadbar = 5;        /* vertical padding for statusbar */
+static const char *fonts[] = {"IosevkaNerdFontMono:size=20"};
+static const char dmenufont[] = "IosevkaNerdFontMono:size=20";
+static const char col_gray1[] = "#11111B";
+static const char col_gray2[] = "#11111B";
+static const char col_gray3[] = "#D9E0EE";
+static const char col_gray4[] = "#D9E0EE";
+static const char col_cyan[] = "#CBA6F7";
 static const char *colors[][3] = {
     /*               fg         bg         border   */
-    [SchemeNorm] = {"#bbbbbb", "#001438", "#0044bb"},
-    [SchemeSel] = {"#eeeeee", "#444444", "#0044bb"},
-    [SchemeStatus] = {"#bbbbbb", "#001438", "#000000"},   // dwmstatus
-    [SchemeTagsSel] = {"#eeeeee", "#0044bb", "#000000"},  // tag
-    [SchemeTagsNorm] = {"#bbbbbb", "#001438", "#000000"}, // tags unselected
-    [SchemeInfoSel] = {"#bbbbbb", "#0044bb", "#000000"},  // middle
-    [SchemeInfoNorm] = {"#eeeeee", "#001438", "#000000"}, // middle unselected
+    [SchemeNorm] = {col_gray3, col_gray1, col_gray2},
+    [SchemeSel] = {col_gray1, col_cyan, col_cyan},
+};
+
+static const char *const autostart[] = {
+    "wmname", "LG3D",
+    NULL,     "/home/zephyr/suckless/dwm/scripts/bar",
+    NULL,     "/usr/local/bin/hsetroot",
+    "-cover", "/home/zephyr/suckless/dwm/wallpapers/catppuccin_triangle.png",
+    NULL,
+
+    NULL /* terminate */
 };
 
 /* tagging */
-static const char *tags[] = {"", "", "", "", "󰨞",
-                             "", "", "", "󰻞"};
+static const char *tags[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
-static const Rule rules[] = {
-    /* xprop(1):
-     *	WM_CLASS(STRING) = instance, class
-     *	WM_NAME(STRING) = title
-     */
+static Rule rules[] = {
     /* class      instance    title       tags mask     isfloating   monitor */
-    {"Gimp", NULL, NULL, 0, 1, -1},
+    {"note_window", NULL, NULL, 0, 0, -1},
 
-    {"firefox", NULL, NULL, 1 << 6, 0, -1},
-    {"qutebrowser", NULL, NULL, 1 << 6, 0, -1},
-    {"Zathura", NULL, NULL, 1 << 7, 0, -1},
-    {"armcord", NULL, NULL, 1 << 8, 0, -1},
-    // { "zoom",  NULL,       NULL,       1 << 8,       0,           -1 },
-    // { "Virt-manager",   "virt-manager",     "win11 on QEMU/KVM",     0, 0, -1
-    // },
-
+    {"MATLAB R2024b - academic use", NULL, "Figure 1", 0, 1, -1},
+    {"MATLAB R2024b - academic use", NULL, "Figure 2", 0, 1, -1},
+    {"MATLAB R2024b - academic use", NULL, "Figure 3", 0, 1, -1},
+    {"MATLAB R2024b - academic use", NULL, "Figure 4", 0, 1, -1},
+    {"MATLAB R2024b - academic use", NULL, "Figure 5", 0, 1, -1},
+    {"MATLAB R2024b - academic use", NULL, "Figure 6", 0, 1, -1},
+    {"MATLAB R2024b - academic use", NULL, "Figure 7", 0, 1, -1},
+    {"MATLAB R2024b - academic use", NULL, "Figure 8", 0, 1, -1},
+    {"MATLAB R2024b - academic use", NULL, "Figure 9", 0, 1, -1},
 };
-
 /* layout(s) */
-static const float mfact = 0.55; /* factor of master area size [0.05..0.95] */
+static const float mfact = 0.50; /* factor of master area size [0.05..0.95] */
 static const int nmaster = 1;    /* number of clients in master area */
 static const int resizehints =
     1; /* 1 means respect size hints in tiled resizals */
@@ -60,54 +65,49 @@ static const Layout layouts[] = {
 
 /* key definitions */
 #define MODKEY Mod1Mask
+#define WINKEY Mod4Mask
 #define TAGKEYS(KEY, TAG)                                                      \
   {MODKEY, KEY, view, {.ui = 1 << TAG}},                                       \
       {MODKEY | ControlMask, KEY, toggleview, {.ui = 1 << TAG}},               \
       {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                        \
       {MODKEY | ControlMask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
 
-/* helper for spawning shell commands in the pre dwm-5.0 fashion */
+/* CMD is for anything with no args */
+#define CMD(cmd)                                                               \
+  {                                                                            \
+    .v = (const char *[]) { cmd, NULL }                                        \
+  }
 #define SHCMD(cmd)                                                             \
   {                                                                            \
-    .v = (static const char *[]) { "/bin/sh", "-c", cmd, NULL }                \
+    .v = (const char *[]) { "/bin/dash", "-c", cmd, NULL }                     \
   }
 
 /* commands */
 static char dmenumon[2] =
-    "0"; /* component of dmenucmd, manipulated in spawn() */
+    "0"; /* component  of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = {
-    "dmenu_run", "-m",  dmenumon,  "-fn", dmenufont, "-nb", "#001438", "-nf",
-    "#bbbbbb",   "-sb", "#0044bb", "-sf", "#eeeeee", NULL};
-static const char *termcmd[] = {"wezterm", NULL};
-static const char *ffcmd[] = {"firefox", NULL};
-static const char *qtbcmd[] = {"qutebrowser", NULL};
-static const char *sscmd[] = {"bin/smaim", NULL};
-static const char *pencmd[] = {"bin/xppen", NULL};
-static const char *vmcmd[] = {"virt-manaeger", NULL};
-static const char *disccmd[] = {"armcord", NULL};
-static const char *zoomcmd[] = {"zoom", NULL};
-static const char *codecmd[] = {"code", NULL};
-Autostarttag autostarttaglist[] = {
-    //	{.cmd = pencmd,		.tags = 1 << 3},
-    {.cmd = termcmd, .tags = 1 << 0},
-    {.cmd = termcmd, .tags = 1 << 1},
-    {.cmd = termcmd, .tags = 1 << 2},
-    {.cmd = termcmd, .tags = 1 << 3},
-    {.cmd = codecmd, .tags = 1 << 4},
-    {.cmd = ffcmd, .tags = 1 << 6},
-    {.cmd = qtbcmd, .tags = 1 << 6},
-    //{.cmd = vmcmd,        .tags = 1 << 7 },
-    {.cmd = disccmd, .tags = 1 << 8},
-    //	{.cmd = zoomcmd,     .tags = 1 << 8 },
-    {.cmd = NULL, .tags = 0},
-};
+    "dmenu_run", "-m",      dmenumon, "-fn",    dmenufont, "-nb",     col_gray1,
+    "-nf",       col_gray3, "-sb",    col_cyan, "-sf",     col_gray4, NULL};
+static const char *termcmd[] = {"st", NULL};
+static const char *edcmd[] = {"emacsclient", "-c", "-n", "-a", "emacs", NULL};
+static const char *browsercmd[] = {"zen-twilight", NULL};
+static const char *notecmd[] = {
+    "st", "-c", "note_window", "-e", "/home/zephyr/suckless/dwm/scripts/notes",
+    NULL};
+static const char *sscmd[] = {"dash", "-c",        "'maim",      "-s",
+                              "|",    "xclip",     "-selection", "clipboard",
+                              "-t",   "image/png", "-i'",        NULL};
 
 static const Key keys[] = {
     /* modifier                     key        function        argument */
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
+    {WINKEY | ShiftMask, XK_s, spawn, CMD(SCRIPT(ss))},
+    //{MODKEY, XK_x, spawn, CMD("xprop")},
     {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
-    {MODKEY | ShiftMask, XK_s, spawn, SHCMD("/bin/smaim")},
-    {MODKEY, XK_b, togglebar, {0}},
+    {MODKEY, XK_e, spawn, {.v = edcmd}},
+    {MODKEY, XK_n, spawn, {.v = notecmd}},
+    {MODKEY, XK_b, spawn, {.v = browsercmd}},
+    //{MODKEY, XK_b, togglebar, {0}},
     {MODKEY, XK_j, focusstack, {.i = +1}},
     {MODKEY, XK_k, focusstack, {.i = -1}},
     {MODKEY, XK_i, incnmaster, {.i = +1}},
@@ -128,9 +128,6 @@ static const Key keys[] = {
     {MODKEY, XK_period, focusmon, {.i = +1}},
     {MODKEY | ShiftMask, XK_comma, tagmon, {.i = -1}},
     {MODKEY | ShiftMask, XK_period, tagmon, {.i = +1}},
-    {MODKEY, XK_minus, setgaps, {.i = -1}},
-    {MODKEY, XK_equal, setgaps, {.i = +1}},
-    {MODKEY | ShiftMask, XK_equal, setgaps, {.i = 0}},
     TAGKEYS(XK_1, 0) TAGKEYS(XK_2, 1) TAGKEYS(XK_3, 2) TAGKEYS(XK_4, 3)
         TAGKEYS(XK_5, 4) TAGKEYS(XK_6, 5) TAGKEYS(XK_7, 6) TAGKEYS(XK_8, 7)
             TAGKEYS(XK_9, 8){MODKEY | ShiftMask, XK_q, quit, {0}},
