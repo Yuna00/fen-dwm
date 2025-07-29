@@ -1,7 +1,3 @@
-#define DWMHOME "/home/zephyr/suckless/dwm"
-#define SCRIPTHOME DWMHOME "/scripts/"
-#define SCRIPT(script) SCRIPTHOME #script
-
 static const unsigned int borderpx = 4; /* border pixel of windows */
 static const unsigned int snap = 32;    /* snap pixel */
 static const int showbar = 1;           /* 0 means no bar */
@@ -27,7 +23,6 @@ static const char *const autostart[] = {
     NULL,     "/usr/local/bin/hsetroot",
     "-cover", "/home/zephyr/suckless/dwm/wallpapers/catppuccin_triangle.png",
     NULL,
-
     NULL /* terminate */
 };
 
@@ -81,6 +76,10 @@ static const Layout layouts[] = {
   {                                                                            \
     .v = (const char *[]) { "/bin/dash", "-c", cmd, NULL }                     \
   }
+#define DWMHOME "/home/zephyr/suckless/fen-dwm"
+#define SCRIPTHOME DWMHOME "/scripts/"
+#define SCRIPT(script) SCRIPTHOME #script
+
 
 /* commands */
 static char dmenumon[2] =
@@ -90,7 +89,7 @@ static const char *dmenucmd[] = {
     "-nf",       col_gray3, "-sb",    col_cyan, "-sf",     col_gray4, NULL};
 static const char *termcmd[] = {"st", NULL};
 static const char *edcmd[] = {"emacsclient", "-c", "-n", "-a", "emacs", NULL};
-static const char *browsercmd[] = {"zen-twilight", NULL};
+static const char *browsercmd[] = {"qutebrowser", NULL};
 static const char *notecmd[] = {
     "st", "-c", "note_window", "-e", "/home/zephyr/suckless/dwm/scripts/notes",
     NULL};
@@ -102,7 +101,6 @@ static const Key keys[] = {
     /* modifier                     key        function        argument */
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
     {WINKEY | ShiftMask, XK_s, spawn, CMD(SCRIPT(ss))},
-    //{MODKEY, XK_x, spawn, CMD("xprop")},
     {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
     {MODKEY, XK_e, spawn, {.v = edcmd}},
     {MODKEY, XK_n, spawn, {.v = notecmd}},
