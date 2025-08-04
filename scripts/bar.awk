@@ -24,6 +24,7 @@ BEGIN {
 NR == 1 {
 	CPU = $1 # loadavg over 1 min
 }
+
 # Memory Usage
 NR > 1 && /MemT/ {
 	MemT = $2

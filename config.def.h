@@ -18,11 +18,8 @@ static const char *colors[][3] = {
 };
 
 static const char *const autostart[] = {
-    "wmname", "LG3D",
-    NULL,     "/home/zephyr/suckless/dwm/scripts/bar",
-    NULL,     "/usr/local/bin/hsetroot",
-    "-cover", "/home/zephyr/suckless/dwm/wallpapers/catppuccin_triangle.png",
-    NULL,
+    "wmname", "LG3D", NULL,
+	"/usr/local/bin/hsetroot", "-cover", "/home/zephyr/suckless/fen-dwm/wallpapers/catppuccin_triangle.png", NULL,
     NULL /* terminate */
 };
 

@@ -1,5 +1,2 @@
 #!/bin/dash
-while true; do
-	sleep 5
-	dwm -s "$(wak -f $HOME/suckless/fen-dwm/scripts/bar.awk /proc/loadavg /proc/meminfo)"
-done
+wak -f $HOME/suckless/fen-dwm/scripts/bar1.awk &
